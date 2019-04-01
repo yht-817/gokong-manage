@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.FriendInviteMapper">
+
+    <!-- 通用查询映射结果 -->
+    <sql id="Base_Column_List">
+	`id`,
+	`invite_no`,
+	`user_no`,
+	`friend_user_no`,
+	`invite_date`,
+	`verify_info`,
+	`invite_state`,
+	`change_date`
+</sql>
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.FriendInvite">
+        <id column="id" property="id"/>
+        <result column="invite_no" property="inviteNo"/>
+        <result column="user_no" property="userNo"/>
+        <result column="friend_user_no" property="friendUserNo"/>
+        <result column="invite_date" property="inviteDate"/>
+        <result column="verify_info" property="verifyInfo"/>
+        <result column="invite_state" property="inviteState"/>
+        <result column="change_date" property="changeDate"/>
+    </resultMap>
+    <select id="pageQueryInviteGroupUser"
+            resultType="cn.gokong.www.gokongmain.vo.group.PageQueryInviteGroupUserOutput">
+
+        select ui.user_no,ui.user_head,ui.nick_name
+        from friend_invite fi
+        right join user_info ui on ui.user_no = fi.friend_user_no
+        where fi.invite_state = '10150002'
+        and fi.user_no = #{userNo}
+        <if test="keyword != null">
+            and ui.nick_name LIKE CONCAT('%',#{keyword},'%')
+        </if>
+        limit #{start},#{end}
+    </select>
+    <select id="pageQueryFriend" resultType="cn.gokong.www.gokongmain.vo.friend.PageQueryFriendOutput">
+
+        select fi.invite_no,ui.user_no,ui.user_head,ui.nick_name
+        from friend_invite fi
+        left join user_info ui on ui.user_no = fi.friend_user_no
+        where fi.invite_state = '10150002'
+        and fi.user_no = #{userNo}
+        <if test="keyword != null">
+            and ui.nick_name LIKE CONCAT(CONCAT('%', #{keyword}), '%')
+        </if>
+        limit #{pageNo},#{pageSize}
+    </select>
+
+
+    <!--黑名单信息查询-->
+    <resultMap id="BlackMap" type="cn.gokong.www.gokongmain.domain.BlacFriendInfo">
+        <result column="user_no" property="userNo"/>
+        <result column="user_head" property="userHead"/>
+        <result column="nick_name" property="nickName"/>
+    </resultMap>
+    <select id="queryBlackList" resultMap="BlackMap">
+        select user_no,user_head,nick_name from user_info
+        where user_no in
+        <foreach collection="listdata" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

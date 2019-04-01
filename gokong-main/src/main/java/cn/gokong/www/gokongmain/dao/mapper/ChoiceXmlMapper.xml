@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.ChoiceMapper">
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.vo.chioce.ChoiceInfoListVo">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="choice_type" jdbcType="VARCHAR" property="choiceType"/>
+        <result column="resource_no" jdbcType="VARCHAR" property="resourceNo"/>
+        <result column="resource_name" jdbcType="VARCHAR" property="resourceName"/>
+        <result column="home_small_photo" jdbcType="VARCHAR" property="photo"/>
+        <result column="pay_amount" jdbcType="INTEGER" property="payAmount"/>
+        <result column="unit" jdbcType="VARCHAR" property="unit"/>
+        <result column="cost_amount" jdbcType="DECIMAL" property="costAmount"/>
+        <result column="collection" jdbcType="VARCHAR" property="collection"/>
+    </resultMap>
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="finddetails" type="cn.gokong.www.gokongmain.vo.chioce.ChoiceInfo">
+        <id column="id" property="id"/>
+        <result column="choice_type" property="choiceType"/>
+        <result column="user_no" property="userNo"/>
+        <result column="resource_no" property="resourceNo"/>
+        <result column="resource_name" property="resourceName"/>
+        <result column="search_keyword" property="searchKeyword"/>
+        <result column="put_num" property="putNum"/>
+        <result column="pay_num" property="payNum"/>
+        <result column="max_pay_num" property="maxPayNum"/>
+        <result column="unit" property="unit"/>
+        <result column="coupon_amount" property="couponAmount"/>
+        <result column="pay_amount" property="payAmount"/>
+        <result column="pay_amount_wukb" property="payAmountWukb"/>
+        <result column="cost_amount" property="costAmount"/>
+        <result column="share_rebate_amount" property="shareRebateAmount"/>
+        <result column="cut_min_amount" property="cutMinAmount"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="title_desc" property="titleDesc"/>
+        <result column="use_rules" property="useRules"/>
+        <result column="use_explain" property="useExplain"/>
+        <result column="copywrit_url" property="copywritUrl"/>
+        <result column="position_no" property="positionNo"/>
+        <result column="banner_photo" property="bannerPhoto"/>
+        <result column="detail_photo" property="detailPhoto"/>
+        <result column="home_middle_photo" property="homeMiddlePhoto"/>
+        <result column="home_small_photo" property="homeSmallPhoto"/>
+        <result column="coupon_cover_photo" property="couponCoverPhoto"/>
+        <result column="praise_num" property="praiseNum"/>
+        <result column="merchant_name" property="merchantName"/>
+        <result column="merchant_contract" property="merchantContract"/>
+        <result column="merchant_phone" property="merchantPhone"/>
+        <result column="merchant_address" property="merchantAddress"/>
+        <result column="create_date" property="createDate"/>
+        <result column="user_no_platform" property="userNoPlatform"/>
+        <result column="user_name_platform" property="userNamePlatform"/>
+        <result column="audit_state" property="auditState"/>
+        <result column="audit_date" property="auditDate"/>
+        <result column="execute_state" property="executeState"/>
+        <result column="home_top_photo" property="homeTopPhoto"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, choice_type, user_no, resource_no, resource_name, search_keyword, put_num, pay_num,
+        max_pay_num, unit, coupon_amount, pay_amount, pay_amount_wukb, cost_amount, share_rebate_amount,
+        cut_min_amount, start_date, end_date, title_desc,use_rules,use_explain, copywrit_url, position_no,
+        banner_photo, detail_photo, home_middle_photo, home_small_photo, coupon_cover_photo,
+        praise_num, merchant_name, merchant_contract, merchant_phone, merchant_address, create_date,
+        user_no_platform, user_name_platform, audit_state, audit_date, execute_state,share_photo
+    </sql>
+
+    <!--顶部-->
+    <select id="findTopInfo" resultType="map">
+        SELECT
+        ci.id, choice_type,ci.resource_no,resource_name,ci.home_top_photo
+        FROM choice_info ci
+        LEFT JOIN choice_info_search_keyword ke ON ke.resource_no = ci.resource_no
+        WHERE ci.execute_state = '10210002' and ci.choice_type = '10350001' and position_no = '10360001'
+        <if test="city != null and city != ''">
+            AND position_goods LIKE CONCAT('%',#{city},'%')
+        </if>
+        GROUP BY ke.order_num DESC,create_date DESC LIMIT 4
+    </select>
+    <!--中部-->
+    <select id="findMilddleInfo" resultType="map">
+        SELECT
+        ci.id, choice_type,ci.resource_no,resource_name,ci.home_middle_photo
+        FROM choice_info ci
+        LEFT JOIN choice_info_search_keyword ke ON ke.resource_no = ci.resource_no
+        WHERE ci.execute_state = '10210002' and ci.choice_type = '10350001' and position_no = '10360002'
+        <if test="city != null and city != ''">
+            AND position_goods LIKE CONCAT('%',#{city},'%')
+        </if>
+        GROUP BY ke.order_num DESC,create_date DESC LIMIT 1
+    </select>
+
+    <!--底部-->
+    <select id="findBottom" parameterType="map" resultMap="BaseResultMap">
+        SELECT ci.id, choice_type,ci.resource_no,resource_name,ci.home_small_photo,pay_amount,cost_amount,unit,(SELECT
+        sc.content_no FROM collection_info sc where sc.content_no = ci.resource_no AND sc.user_no = #{userNo}) AS
+        collection
+        FROM choice_info ci
+        <choose>
+            <when test="keyWord != null and keyWord != ''">
+                LEFT JOIN choice_info_search_keyword ke ON ke.resource_no = ci.resource_no
+                WHERE ci.execute_state = '10210002' and position_no = '10360003' and ke.search_keyword = #{keyWord}
+            </when>
+            <otherwise>
+                LEFT JOIN choice_info_search_keyword ke ON ke.resource_no = ci.resource_no
+                WHERE ci.execute_state = '10210002' and position_no = '10360003'
+            </otherwise>
+        </choose>
+        <if test="city != null and city != ''">
+            AND position_goods LIKE CONCAT('%',#{city},'%')
+        </if>
+        GROUP BY ke.order_num DESC,create_date DESC LIMIT ${pageNo}, ${pageSize}
+    </select>
+
+    <!--查看精选的详情-->
+    <select id="findDetails" parameterType="java.lang.String" resultMap="finddetails">
+        select
+        <include refid="Base_Column_List"/>
+        from choice_info
+        where resource_no = #{resourceno}
+    </select>
+
+</mapper>

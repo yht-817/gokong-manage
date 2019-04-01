@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.ServiceScopeTwoMapper">
+    <resultMap type="cn.gokong.www.gokongmain.vo.city.ServiceScopeOne" id="ServiceScopeOneMap">
+        <id column="id" property="id"/>
+        <result column="scope_one_no" property="scopeOneNo"/>
+        <result column="scope_one_name" property="scopeOneName"/>
+        <result column="scope_two_icon" property="scopeTwoIcon"/>
+        <collection property="listChilds" ofType="cn.gokong.www.gokongmain.vo.city.ServiceScopeTwo" column="scopeOneNo">
+            <id column="sid" property="id"/>
+            <result column="scope_two_no" property="scopeTwoNo"/>
+            <result column="scope_two_name" property="scopeTwoName"/>
+            <result column="city_lng" property="lng"/>
+            <result column="city_lat" property="lat"/>
+            <result column="currency" property="currency"/>
+        </collection>
+    </resultMap>
+
+    <resultMap type="cn.gokong.www.gokongmain.vo.city.ServiceScopeTwo" id="ServiceScopeOneMaps">
+        <id column="sid" property="id"/>
+        <result column="scope_two_no" property="scopeTwoNo"/>
+        <result column="scope_two_no" property="scopeTwoNo"/>
+        <result column="scope_two_name" property="scopeTwoName"/>
+        <result column="city_lng" property="lng"/>
+        <result column="city_lat" property="lat"/>
+    </resultMap>
+    <!-- 查询一对多的sql语句 -->
+    <select id="findForeignCity" parameterType="cn.gokong.www.gokongmain.vo.city.ServiceScopeOne"
+            resultMap="ServiceScopeOneMap">
+    SELECT n.id,n.scope_one_no,n.scope_one_name,t.id AS sid,t.scope_two_no,t.scope_two_name,n.scope_two_icon,t.city_lng,t.city_lat,
+    (select sc.currency from shop_city sc where sc.city_name = (select scope_one_name from service_scope_one where scope_one_no = (select scope_one_no from service_scope_two where scope_two_name = t.scope_two_name))) as currency
+    FROM service_scope_one n
+    LEFT JOIN service_scope_two t ON n.scope_one_no = t.scope_one_no
+    where n.scope_one_no != '86'
+    group by n.scope_one_no,t.scope_two_no
+    </select>
+
+    <select id="findInlandCity" parameterType="cn.gokong.www.gokongmain.vo.city.ServiceScopeTwo"
+            resultMap="ServiceScopeOneMaps">
+        SELECT sst.id,sst.scope_one_no,sst.scope_two_name,sst.scope_two_no,sst.city_lng,sst.city_lat,(select sc.currency from shop_city sc where sc.city_name = (
+		select sso.scope_one_name
+		from service_scope_one sso
+		where sso.scope_one_no = (
+			select s_s_t.scope_one_no
+			from service_scope_two s_s_t
+			where s_s_t.scope_two_name = '成都市'
+			)
+		)) as currency
+        FROM service_scope_two sst where sst.scope_one_no = '86'
+    </select>
+
+    <!--搜索查询数据-->
+    <select id="findCity" resultType="map">
+        SELECT a.scope_one_name,b.scope_two_name,b.city_lng as lng,b.city_lat as lat  FROM service_scope_one a LEFT JOIN service_scope_two b ON a.scope_one_no = b.scope_one_no where 1=1 and b.scope_two_name LIKE CONCAT('%',#{cityname},'%')
+    </select>
+
+
+    <resultMap type="cn.gokong.www.gokongmain.domain.ServiceCountry" id="serviceCountry">
+        <result column="country" property="country"/>
+        <result column="country_no" property="countryNo"/>
+        <result column="country_icon" property="countryicon"/>
+        <collection property="citys" ofType="cn.gokong.www.gokongmain.domain.ServiceCity" column="serviceCity">
+            <result column="city" property="city"/>
+            <result column="city_no" property="cityNo"/>
+        </collection>
+    </resultMap>
+    <select id="findCountry" parameterType="cn.gokong.www.gokongmain.domain.ServiceCountry" resultMap="serviceCountry">
+        SELECT a.country,a.country_no,a.country_icon,b.city,b.city_no FROM service_country a LEFT JOIN service_city b ON a.country_no = b.country_no GROUP BY b.city_no
+    </select>
+
+</mapper>

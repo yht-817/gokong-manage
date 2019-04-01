@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.PrivilegeUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.PrivilegeUser">
+        <id column="id" property="id" />
+        <result column="user_no" property="userNo" />
+        <result column="chinese_circle" property="chineseCircle" />
+        <result column="company_recruitment" property="companyRecruitment" />
+        <result column="used_deal" property="usedDeal" />
+        <result column="information" property="information" />
+        <result column="local_activity" property="localActivity" />
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.UiControlMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.UiControl">
+        <id column="id" property="id"/>
+        <result column="city_no" property="cityNo"/>
+        <result column="ui_name" property="uiName"/>
+        <result column="icon_path" property="iconPath"/>
+        <result column="ui_type" property="uiType"/>
+    </resultMap>
+
+    <!--首页的七张-->
+    <select id="findCityCattlePeople" resultType="map">
+        SELECT user_no,cattle_people_photo,cattle_people_name,cattle_people_work,cattle_people_ranke FROM cattle_people
+        WHERE 1=1
+        <if test="cityNo != null and cityNo != ''">
+            AND cattle_people_city_no LIKE CONCAT(CONCAT('%',#{cityNo},'%'))
+        </if>
+        and audit_status = 1 order by rand() LIMIT 7
+        <!--order by cattle_people_ranke DESC-->
+    </select>
+
+    <!--查看更多-->
+    <select id="findCityCattlePeoples" resultType="map">
+        SELECT user_no,cattle_people_photo,cattle_people_name,cattle_people_work FROM cattle_people
+        WHERE 1=1
+        <if test="cityNo != null and cityNo != ''">
+            AND cattle_people_city_no LIKE CONCAT(CONCAT('%',#{cityNo},'%'))
+        </if>
+        <if test="userName != null and userName != ''">
+            AND cattle_people_name LIKE CONCAT(CONCAT('%',#{userName},'%'))
+        </if>
+        AND audit_status = 1 LIMIT #{pageno},10
+    </select>
+
+    <!--查看牛人的详情-->
+    <select id="findCattlePeopleDetails" resultType="map">
+        SELECT user_no,cattle_people_name,cattle_people_work,cattle_people_abstract,cattle_people_address,cattle_people_label,cattle_people_photo,cattle_worth FROM cattle_people WHERE user_no = #{userNo} LIMIT 1
+    </select>
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultUiMap" type="cn.gokong.www.gokongmain.domain.MyUi">
+        <id column="ui_name" property="uiName"/>
+        <result column="ui_url" property="uiUrl"/>
+        <result column="ui_icon" property="uiIcon"/>
+    </resultMap>
+
+    <select id="queryMyUi" resultMap="BaseResultUiMap">
+         SELECT ui_name,ui_url,ui_icon FROM my_ui WHERE ui_show = 0 ORDER BY ui_sort
+    </select>
+
+    <!--首页按钮列表-->
+    <select id="findHomePage" resultType="map">
+         SELECT * FROM (SELECT a.ui_name,a.icon_path,a.jump_path,a.ui_type,a.descs FROM ui_control a LEFT JOIN service_scope_two b ON a.city_no = b.scope_two_no WHERE a.city_no = #{cityNo}  ORDER BY a.descs) AS listdata WHERE ui_type = '10001' OR ui_type = '10002' OR ui_type = '10003' OR ui_type = '10004'
+    </select>
+
+</mapper>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.LocalActivityMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.LocalActivity">
+        <id column="id" property="id" />
+        <result column="activity_no" property="activityNo" />
+        <result column="user_no" property="userNo" />
+        <result column="activity_title" property="activityTitle" />
+        <result column="activity_desc" property="activityDesc" />
+        <result column="city_name" property="cityName" />
+        <result column="address" property="address" />
+        <result column="create_time" property="createTime" />
+        <result column="activity_time" property="activityTime" />
+        <result column="person_num" property="personNum" />
+        <result column="person_num_scope" property="personNumScope" />
+        <result column="has_charge" property="hasCharge" />
+        <result column="price" property="price" />
+        <result column="activity_type" property="activityType" />
+        <result column="activity_img" property="activityImg" />
+        <result column="has_verify" property="hasVerify" />
+    </resultMap>
+    <select id="pageQueryList" resultType="cn.gokong.www.gokongmain.vo.local_activity.PageQueryListOutput">
+        select ui.user_no,ui.user_head,ui.nick_name,ui.user_sign,la.activity_no,la.activity_title,la.address,la.activity_time,
+        /*CONCAT((select sc.currency from shop_city sc where sc.city_name = (
+        select sso.scope_one_name
+        from service_scope_one sso
+        where sso.scope_one_no = (
+        select s_s_t.scope_one_no
+        from service_scope_two s_s_t
+        where s_s_t.scope_two_name = la.city_name
+        )
+        )),la.price) as price*/
+        la.price
+        from local_activity la ,user_info ui
+        where 1 = 1
+        and ui.user_no = la.user_no
+        and #{nowTime} <![CDATA[<]]> la.activity_time
+        <if test="cityName != null and cityName != '' ">
+            and la.city_name = #{cityName}
+        </if>
+        <if test="keyWord != null and keyWord != '' ">
+            and keyWord like concat(concat('%',#{keyWord}),'%')
+        </if>
+        order by create_time desc
+        limit #{pageNo},#{pageSize}
+    </select>
+    <select id="countByCityName" resultType="java.lang.Integer">
+        select count(1)
+        from local_activity la,user_info ui
+        where 1 = 1
+        and ui.user_no = la.user_no
+        and now() <![CDATA[<]]> la.activity_time
+        <if test="cityName != null and cityName != ''">
+            and la.city_name = #{cityName}
+        </if>
+    </select>
+    <select id="pageQueryMyJoinActivity" resultType="cn.gokong.www.gokongmain.vo.local_activity.PageQueryMyJoinActivityOutput">
+        select ui.user_no,ui.user_head,ui.nick_name,ui.user_sign,la.activity_no,la.activity_title,la.address,la.activity_time,laa.apply_state,
+        if((select now() <![CDATA[>]]> la.activity_time),'true','false') as hasEnd
+        from local_activity la,local_activity_apply laa,user_info ui
+        where 1 = 1
+        and ui.user_no = la.user_no
+        and laa.activity_no = la.activity_no
+        and (laa.apply_state = '10470002' or laa.apply_state = '10470003')
+        and laa.user_no = #{userNo}
+        <if test="keyWord != null and keyWord != ''">
+            and la.keyWord like concat(concat('%',#{keyWord}),'%')
+        </if>
+        GROUP BY la.activity_no
+        order by la.activity_time desc
+        limit #{pageNo},#{pageSize}
+    </select>
+    <select id="pageQueryMyCreateActivity"
+            resultType="cn.gokong.www.gokongmain.vo.local_activity.PageQueryMyCreateActivityOutput">
+        select ui.user_no,ui.user_head,ui.nick_name,ui.user_sign,la.activity_no,la.activity_title,la.address,la.activity_time,
+        if((select now() <![CDATA[>]]> la.activity_time),'true','false') as hasEnd
+        from local_activity la
+        left join user_info ui on ui.user_no = la.user_no
+        where 1 = 1
+        and la.user_no = #{userNo}
+        <if test="keyWord != null and keyWord !='' ">
+            and la.keyWord like concat(concat('%',#{keyWord}),'%')
+        </if>
+        GROUP BY la.activity_no
+        order by la.activity_time desc
+        limit #{pageNo},#{pageSize}
+    </select>
+
+</mapper>

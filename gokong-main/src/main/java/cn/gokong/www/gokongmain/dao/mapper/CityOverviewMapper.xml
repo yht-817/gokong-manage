@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.CityOverviewMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.CityOverview">
+        <id column="id" property="id" />
+        <result column="city_name" property="cityName" />
+        <result column="ui_name" property="uiName" />
+        <result column="icon_path" property="iconPath" />
+        <result column="jump_path" property="jumpPath" />
+        <result column="descs" property="descs" />
+    </resultMap>
+
+</mapper>

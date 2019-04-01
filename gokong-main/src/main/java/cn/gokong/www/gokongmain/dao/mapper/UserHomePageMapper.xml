@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.UserHomePageMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.UserHomePage">
+        <id column="id" property="id" />
+        <result column="user_no" property="userNo" />
+        <result column="home_photo1" property="homePhoto1" />
+        <result column="home_photo2" property="homePhoto2" />
+        <result column="home_photo3" property="homePhoto3" />
+        <result column="home_photo4" property="homePhoto4" />
+        <result column="home_photo5" property="homePhoto5" />
+        <result column="home_photo6" property="homePhoto6" />
+        <result column="home_photo7" property="homePhoto7" />
+        <result column="home_photo8" property="homePhoto8" />
+        <result column="home_photo9" property="homePhoto9" />
+        <result column="cover_no" property="coverNo" />
+    </resultMap>
+
+    <update id="updateByUserNoFieldVal" statementType="STATEMENT">
+    update user_home_page
+    set
+      ${fields} = '${homePhoto}'
+    where user_no = '${userNo}'
+    </update>
+
+</mapper>

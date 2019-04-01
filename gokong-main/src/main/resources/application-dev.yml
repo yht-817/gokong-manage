@@ -1,0 +1,40 @@
+server:
+  port: 8080
+  max-http-header-size: 4194304
+spring:
+  application:
+    name: gokong
+  datasource:
+    url: jdbc:mysql://47.96.99.171:3306/GoKong?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+    username: root
+    password: gokong123456..
+#    url: jdbc:mysql://47.98.139.112:3306/GoKong?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+#    username: root
+#    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    dbcp2:
+      initial-size: 2
+      min-idle: 1
+      max-idle: 20
+      max-wait-millis: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: select 'x'
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+    type: com.alibaba.druid.pool.DruidDataSource
+
+
+mybatis-plus:
+  type-aliases-package: cn.gokong.www.gokongmain.domain
+  global-config:
+    db-config:
+      #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+      field-strategy: not_empty
+      #驼峰下划线转换
+      table-underline: true
+      #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+      id-type: input
+  mapper-locations: classpath:/cn/gokong/www/gokongmain/dao/mapper/*Mapper.xml

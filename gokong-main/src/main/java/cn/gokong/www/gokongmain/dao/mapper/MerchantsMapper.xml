@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.MerchantsMapper">
+
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.Merchants">
+        <id column="id" property="id" />
+        <result column="merchants_no" property="merchantsNo" />
+        <result column="merchants_name" property="merchantsName" />
+        <result column="title_img" property="titleImg" />
+        <result column="merchants_desc" property="merchantsDesc" />
+        <result column="address" property="address" />
+        <result column="create_time" property="createTime" />
+        <result column="priority" property="priority" />
+        <result column="merchants_type" property="merchantsType" />
+        <result column="phone_no" property="phoneNo" />
+        <result column="city_name" property="cityName" />
+    </resultMap>
+    <select id="pageQueryMerchants" resultType="cn.gokong.www.gokongmain.vo.merchants.PageQueryMerchantsOutput">
+        select merchants_no,merchants_name,title_img,address
+        from merchants
+        where merchants_type = #{merchantsType}
+        and city_name = #{cityName}
+        <if test="keyword != null">
+            and merchants_name LIKE CONCAT(CONCAT('%', #{keyword}), '%')
+        </if>
+        limit #{startNo},#{pageSize}
+    </select>
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.UsedDealMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.UsedDeal">
+        <id column="id" property="id" />
+        <result column="used_no" property="usedNo" />
+        <result column="used_title" property="usedTitle" />
+        <result column="user_no" property="userNo" />
+        <result column="used_content" property="usedContent" />
+        <result column="used_img" property="usedImg" />
+        <result column="create_time" property="createTime" />
+        <result column="type_no" property="typeNo" />
+        <result column="browse_num" property="browseNum" />
+        <result column="comment_num" property="commentNum" />
+        <result column="price" property="price" />
+        <result column="city_name" property="cityName" />
+        <result column="gold_symbols" property="goldSymbols" />
+    </resultMap>
+    <select id="pageQueryList" resultType="cn.gokong.www.gokongmain.vo.used_deal.PageQueryListOutput">
+
+        select ui.user_no,ui.user_head,ui.nick_name,ud.used_no,ud.used_title,ud.used_content,ud.used_img,
+        ud.browse_num,ud.comment_num,ud.create_time,CONCAT(ud.gold_symbols,ud.price) as price
+        from used_deal ud
+        left join user_info ui on ui.user_no = ud.user_no
+        where 1 = 1
+        <if test="typeNo != null">
+            and type_no = #{typeNo}
+        </if>
+        <if test="cityName != null and cityName != ''">
+            and ud.city_name = #{cityName}
+        </if>
+        <if test="keyWord != null and keyWord != '' ">
+            and used_title = #{keyWord}
+        </if>
+        order by ud.create_time desc
+        limit #{pageNo},#{pageSize}
+    </select>
+
+</mapper>

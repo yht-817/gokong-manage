@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.FriendGroupMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.FriendGroup">
+        <id column="id" property="id"/>
+        <result column="group_no" property="groupNo"/>
+        <result column="group_name" property="groupName"/>
+        <result column="create_date" property="createDate"/>
+        <result column="user_no" property="userNo"/>
+        <result column="group_node" property="groupNode"/>
+        <result column="group_state" property="groupState"/>
+        <result column="if_pay_group" property="ifPayGroup"/>
+        <result column="group_head" property="groupHead"/>
+        <result column="pay_amount" property="payAmount"/>
+        <result column="city_no" property="cityNo"/>
+        <result column="group_sort" property="groupSort"/>
+        <result column="join_mark" property="joinMark"/>
+        <result column="group_type" property="groupType"/>
+    </resultMap>
+
+    <!--查看热门群-->
+    <select id="getHots" resultType="map">
+        SELECT a.group_no,a.group_head,a.group_name,(SELECT COUNT(group_no) FROM friend_group_user b WHERE a.group_no = b.group_no) AS sums
+        FROM friend_group a
+        WHERE a.city_no = #{cityNo}
+        and a.group_state = '10160001'
+        and a.group_type = '1'
+        ORDER BY a.group_sort DESC,sums DESC  LIMIT 4
+    </select>
+    <!--查看更多热门群，用户没有加的-->
+    <select id="findPageGropy" resultType="map">
+        SELECT a.group_no,a.group_head,a.group_node,a.group_name,(SELECT COUNT(group_no) FROM friend_group_user b WHERE a.group_no = b.group_no AND b.user_no != #{userno} and b.group_user_state != '10170001') AS sums
+        FROM friend_group a WHERE a.city_no = #{cityno} LIMIT #{pageno},10
+    </select>
+    <!-- 分页检索群 -->
+    <select id="pageSearchGroup" resultType="cn.gokong.www.gokongmain.vo.group.PageSearchGroupOutput">
+        select fg.user_no,fg.group_no,fg.group_name,fg.group_head,fg.group_node,join_mark,
+        (select count(1) from friend_group_user where group_no = fg.group_no and group_user_state = '10170001') as personCount
+        <if test="userNo != null and userNo !='' ">
+            ,IF((select count(1) from friend_group_user fgu where fgu.group_no = fg.group_no and fgu.user_no = #{userNo} and fgu.group_user_state = '10170001'),'true','false') as isokJoin,
+            (select group_user_state from friend_group_user fgu where fgu.group_no = fg.group_no and fgu.user_no = #{userNo}) as applyState
+        </if>
+        from friend_group fg
+        where 1 = 1
+        and fg.group_state = '10160001'
+        and fg.group_type = '1'
+        <if test="keyword != null">
+            and fg.group_name LIKE CONCAT('%',#{keyword},'%')
+        </if>
+        <if test="cityName != null">
+            and fg.city_no = #{cityName}
+        </if>
+        order by <if test="userNo != null and userNo != '' ">isokJoin,</if> personCount
+        limit #{pageNo},#{pageSize}
+    </select>
+</mapper>

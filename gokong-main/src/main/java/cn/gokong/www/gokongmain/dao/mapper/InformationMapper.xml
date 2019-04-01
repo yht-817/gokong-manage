@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.InformationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.Information">
+        <id column="id" property="id" />
+        <result column="information_no" property="informationNo" />
+        <result column="information_mode" property="informationMode" />
+        <result column="user_no" property="userNo" />
+        <result column="information_name" property="informationName" />
+        <result column="information_photo" property="informationPhoto" />
+        <result column="photo_size_type" property="photoSizeType" />
+        <result column="information_url" property="informationUrl" />
+        <result column="release_date" property="releaseDate" />
+        <result column="set_top_state" property="setTopState" />
+        <result column="evaluate_num" property="evaluateNum" />
+        <result column="click_num" property="clickNum" />
+    </resultMap>
+
+    <select id="pageQueryHomeInformation" resultType="cn.gokong.www.gokongmain.vo.information.PageQueryInformationHomeOutput">
+        select i.information_no,i.information_name,i.information_photo,i.photo_size_type,i.release_date,i.set_top_state,i.evaluate_num,i.click_num,ui.user_no,ui.user_head,ui.nick_name
+        from information i
+        left join user_info ui on ui.user_no = i.user_no
+        where 1=1
+        <if test="keyword != null and keyword !='' ">
+            and i.information_name LIKE CONCAT(CONCAT('%', #{keyword}), '%')
+        </if>
+        order by i.set_top_state,i.release_date desc
+        limit #{pageNo},#{pageSize}
+    </select>
+    <select id="pageQueryHomeFansInformation"
+            resultType="cn.gokong.www.gokongmain.vo.information.PageQueryInformationHomeOutput">
+        select i.information_no,i.information_name,i.information_photo,i.photo_size_type,i.release_date,i.set_top_state,i.evaluate_num,i.click_num,ui.user_no,ui.user_head,ui.nick_name
+        from information i
+        left join user_info ui on ui.user_no = i.user_no
+        where 1=1
+        and i.user_no in (select user_no from fans_info where fans_user_no = #{userNo})
+        <if test="keyword != null and keyword !='' ">
+            and i.information_name LIKE CONCAT(CONCAT('%', #{keyword}), '%')
+        </if>
+        order by i.set_top_state,i.release_date desc
+        limit #{pageNo},#{pageSize}
+    </select>
+
+</mapper>

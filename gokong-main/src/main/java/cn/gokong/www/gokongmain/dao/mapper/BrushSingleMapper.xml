@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.BrushSingleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.BrushSingle">
+        <id column="id" property="id"/>
+        <result column="update_id" property="updateId"/>
+        <result column="product_no" property="productNo"/>
+        <result column="high_praise" property="highPraise"/>
+        <result column="remaine_time" property="remaineTime"/>
+        <result column="limit_order" property="limitOrder"/>
+        <result column="total_order" property="totalOrder"/>
+        <result column="get_order" property="getOrder"/>
+        <result column="keyword" property="keyword"/>
+        <result column="page_no" property="pageNo"/>
+        <result column="business_name" property="businessName"/>
+        <result column="picture_url" property="pictureUrl"/>
+        <result column="price" property="price"/>
+        <result column="branch" property="branch"/>
+    </resultMap>
+
+    <select id="findBrushSingle" resultType="map">
+        SELECT * FROM (select brush_single.id, brush_single.update_id, brush_single.product_no, brush_single.high_praise,brush_single.nohigh_praise, brush_single.remaine_time, brush_single.limit_order, brush_single.total_order, brush_single.get_order,
+        brush_single.keyword,brush_single.penny,brush_single.receive_rules,brush_single.pricesymbol,brush_single.page_no, brush_single.business_name, brush_single.picture_url, brush_single.price,
+        (SELECT COUNT(id) FROM shop_order  WHERE high_praise = 0 AND shop_order.product_no = brush_single.product_no) as  nohigh,
+        (SELECT COUNT(id) FROM shop_order  WHERE high_praise = 1 AND shop_order.product_no = brush_single.product_no) as  high,
+        brush_single.branch,brush_single.region,brush_single.limit_order - (SELECT COUNT(id) FROM shop_order WHERE brush_single.product_no = shop_order.product_no AND shop_order.buy_date &gt;= #{date}) AS sumdata from brush_single where brush_single.exist_state = 0 AND brush_single.total_order &gt; brush_single.get_order AND brush_single.remaine_time &gt;= #{date} AND brush_single.business_name
+        NOT IN(select shop_order.shop_name from shop_order WHERE shop_order.phone_no = #{phoneNo} AND shop_order.buy_date &gt;= #{twoMonth})) AS temporarytable WHERE sumdata  &gt; 0 LIMIT #{page},#{pagesize}
+    </select>
+
+    <resultMap id="Orderbuy" type="cn.gokong.www.gokongmain.vo.brush.BuyOrder">
+        <result column="order_no" property="orderNo"/>
+        <result column="product_no" property="productNo"/>
+        <result column="high_praise" property="highPraise"/>
+        <result column="picture_url" property="pictureUrl"/>
+        <result column="pay_no" property="payNo"/>
+        <result column="phone_no" property="phoneNo"/>
+        <result column="price" property="price"/>
+        <result column="business_name" property="businessName"/>
+        <result column="shopurl" property="shopUrl"/>
+        <result column="region" property="countries"/>
+    </resultMap>
+    <!--查询当前用户购买的还没有结账的订单-->
+    <select id="queryOrder" resultMap="Orderbuy">
+        SELECT a.order_no,a.product_no,a.high_praise,a.picture_url,a.pay_no,a.phone_no,a.price,b.business_name,b.picture_url AS shopurl,b.region FROM shop_order a LEFT JOIN brush_single b
+        ON a.product_no = b.product_no WHERE a.pay_status != 1 AND a.phone_no = #{phoneNo} ORDER BY a.buy_date DESC
+    </select>
+
+    <!--查询已经打款的数据看列表-->
+    <select id="queryOrderPay" resultMap="Orderbuy">
+        SELECT a.order_no,a.product_no,a.high_praise,a.picture_url,a.pay_no,a.phone_no,a.price,b.business_name,b.picture_url AS shopurl,b.region FROM shop_order a LEFT JOIN brush_single b
+        ON a.product_no = b.product_no WHERE a.pay_status = 1 AND a.phone_no = #{phoneNo} ORDER BY a.buy_date DESC
+    </select>
+
+    <!--查询下线的人-->
+    <select id="queryOffline" resultType="map">
+        SELECT under_no,bind_date FROM distribution_relationship WHERE host_no = #{phoneNo}
+        <if test="offphoneNo != null and offphoneNo != '' ">
+            and under_no = #{offphoneNo}
+        </if>
+        ORDER BY bind_date DESC
+    </select>
+
+    <!--查询上线的上线的人-->
+    <select id="queryOnOffline" resultType="map">
+        SELECT phone_no,daytime FROM online_info WHERE host_phone = #{phoneNo}
+        <if test="offphoneNo != null and offphoneNo != '' ">
+            and phone_no = #{offphoneNo}
+        </if>
+        ORDER BY daytime DESC
+    </select>
+</mapper>

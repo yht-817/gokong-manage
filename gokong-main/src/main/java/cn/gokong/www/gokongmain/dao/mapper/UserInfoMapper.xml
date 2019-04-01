@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.UserInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <sql id="Base_Column_List">
+	id,
+	user_no,
+	user_head,
+	user_name,
+	nike_name,
+	sex_no,
+	phone_no,
+	mailbox_no,
+	password,
+	region_date,
+	user_type,
+	last_login_date,
+	user_state,
+	user_grade,
+	user_grade_change_date,
+	user_sign,
+	user_local,
+	phone_code
+</sql>
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.UserInfo">
+        <id column="id" property="id"/>
+        <result column="user_no" property="userNo"/>
+        <result column="user_head" property="userHead"/>
+        <result column="user_name" property="userName"/>
+        <result column="nike_name" property="nickName"/>
+        <result column="sex_no" property="sexNo"/>
+        <result column="phone_no" property="phoneNo"/>
+        <result column="mailbox_no" property="mailboxNo"/>
+        <result column="password" property="password"/>
+        <result column="region_date" property="regionDate"/>
+        <result column="user_type" property="userType"/>
+        <result column="last_login_date" property="lastLoginDate"/>
+        <result column="user_state" property="userState"/>
+        <result column="user_grade" property="userGrade"/>
+        <result column="user_grade_change_date" property="userGradeChangeDate"/>
+        <result column="user_sign" property="userSign"/>
+        <result column="user_local" property="userLocal"/>
+        <result column="phone_code" property="phoneCode"/>
+    </resultMap>
+
+    <!--用户在线数据-->
+    <insert id="addUserStates">
+        INSERT INTO user_states (user_no,online_date,longitude,latitude) VALUES (#{userNo},#{date},#{log},#{lat})
+                     ON DUPLICATE KEY UPDATE user_no = #{userNo},online_date=#{date},longitude = #{log},latitude = #{lat}
+    </insert>
+    <select id="pageSearchUser" resultType="cn.gokong.www.gokongmain.vo.user.PageSearchUserOutput">
+        select ui.user_no,ui.user_head,ui.nick_name,
+        IF((select count(1) from friend_invite fi where fi.invite_state = '10150002' and ((fi.user_no = #{userNo} and fi.friend_user_no = ui.user_no) or (fi.user_no = ui.user_no and fi.friend_user_no = #{userNo}))),'true','false') as friend
+        from user_info ui
+        where 1=1
+        <if test="keyword != null and keyword != '' ">
+            and ui.nick_name LIKE CONCAT(CONCAT('%', #{keyword}), '%')
+        </if>
+        and ui.user_type != 'amazon'
+        and ui.user_no not in (select user_no from cattle_people)
+        order by ui.region_date desc
+        limit #{pageNo},#{pageSize}
+    </select>
+</mapper>

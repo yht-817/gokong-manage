@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.MarketingSendSetMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.MarketingSendSet">
+        <id column="id" property="id" />
+        <result column="send_no" property="sendNo" />
+        <result column="send_type" property="sendType" />
+        <result column="send_amount" property="sendAmount" />
+        <result column="send_begin_date" property="sendBeginDate" />
+        <result column="send_end_date" property="sendEndDate" />
+        <result column="operator_date" property="operatorDate" />
+        <result column="user_no_platform" property="userNoPlatform" />
+        <result column="user_name_platform" property="userNamePlatform" />
+    </resultMap>
+
+</mapper>

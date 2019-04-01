@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.UsedDealLeaveMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.UsedDealLeave">
+        <id column="id" property="id" />
+        <result column="used_no" property="usedNo" />
+        <result column="from_user_no" property="fromUserNo" />
+        <result column="leave_content" property="leaveContent" />
+        <result column="to_user_no" property="toUserNo" />
+        <result column="leave_time" property="leaveTime" />
+    </resultMap>
+
+</mapper>

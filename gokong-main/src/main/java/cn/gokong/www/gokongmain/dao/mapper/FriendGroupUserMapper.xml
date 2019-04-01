@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.FriendGroupUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.FriendGroupUser">
+        <id column="id" property="id"/>
+        <result column="group_no" property="groupNo"/>
+        <result column="user_no" property="userNo"/>
+        <result column="friend_user_no" property="friendUserNo"/>
+        <result column="invite_no" property="inviteNo"/>
+        <result column="group_user_state" property="groupUserState"/>
+        <result column="join_date" property="joinDate"/>
+        <result column="change_date" property="changeDate"/>
+    </resultMap>
+    <select id="pageQueryGroupUsers" resultType="cn.gokong.www.gokongmain.vo.group.QueryGroupUserOutput">
+        select ui.user_no,ui.user_head,ui.nick_name
+        from friend_group_user fgu
+        left join user_info ui on ui.user_no = fgu.user_no
+        where fgu.group_no = #{groupNo}
+        and group_user_state = '10170001'
+        <if test="keyword != null">
+            and ui.nick_name LIKE CONCAT('%',#{keyword},'%')
+        </if>
+        order by join_date
+        limit #{start},#{end}
+    </select>
+
+    <!--查看当前用户已经加的群-->
+    <select id="findUserGroup" resultType="map">
+        SELECT a.group_no,a.group_head,a.group_name,a.group_node,c.user_no,(SELECT COUNT(group_no)FROM
+        friend_group_user b WHERE a.group_no = b.group_no) AS sums FROM friend_group a
+        LEFT JOIN friend_group_user c ON a.group_no = c.group_no
+        WHERE 1=1
+        <if test="cityno != null and cityno != ''">
+            AND a.city_no = #{cityno}
+        </if>
+        AND c.user_no = #{userno} LIMIT #{pageno},10
+    </select>
+
+    <select id="pageQueryUserGroup" resultType="cn.gokong.www.gokongmain.vo.group.PageQueryUserGroupOutput">
+        select fg.user_no,fg.group_no,fg.group_name,fg.group_head,fg.group_node,(select count(1) from friend_group_user where group_no = fg.group_no and group_user_state = '10170001') as personCount
+        from friend_group fg
+        where fg.group_no in (select group_no from friend_group_user where user_no = #{userNo} and group_user_state = #{groupUserState})
+        and fg.group_state = '10160001'
+        <if test="keyword != null">
+            and fg.group_name LIKE CONCAT(CONCAT('%', #{keyword}), '%')
+        </if>
+        limit #{pageNo},#{pageSize}
+    </select>
+    <delete id="deleteBatchGroupUser" parameterType="list">
+        delete from friend_group_user
+        where group_no = #{groupNo}
+        and user_no in
+        <foreach collection="userNos" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+</mapper>

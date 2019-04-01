@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.CompanyRecruitmentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.CompanyRecruitment">
+        <id column="id" property="id" />
+        <result column="recruitment_no" property="recruitmentNo" />
+        <result column="company_logo" property="companyLogo" />
+        <result column="company_name" property="companyName" />
+        <result column="contact_number" property="contactNumber" />
+        <result column="staff_size" property="staffSize" />
+        <result column="position_type" property="positionType" />
+        <result column="working_place" property="workingPlace" />
+        <result column="job_category" property="jobCategory" />
+        <result column="job_salary" property="jobSalary" />
+        <result column="experience" property="experience" />
+        <result column="minimum_degree" property="minimumDegree" />
+        <result column="job_description" property="jobDescription" />
+        <result column="create_time" property="createTime" />
+        <result column="browse_num" property="browseNum" />
+        <result column="city_name" property="cityName" />
+        <result column="gold_symbols" property="goldSymbols" />
+    </resultMap>
+    <select id="pageQueryList" resultType="cn.gokong.www.gokongmain.vo.company_recruitment.PageQueryListOutput">
+
+        select recruitment_no,company_logo,company_name,staff_size,(select type_name from position_type where type_no = position_type) as position_type,CONCAT(gold_symbols,job_salary) as job_salary,job_description
+        from company_recruitment
+        where 1 = 1
+        and city_name = #{cityName}
+        <if test="keyWord != null">
+            and company_name LIKE CONCAT(CONCAT('%', #{keyWord}), '%')
+        </if>
+        order by create_time desc
+        limit #{pageNo},#{pageSize}
+    </select>
+
+</mapper>

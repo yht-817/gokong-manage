@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.LocalActivityApplyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.LocalActivityApply">
+        <id column="id" property="id" />
+        <result column="user_no" property="userNo" />
+        <result column="activity_no" property="activityNo" />
+        <result column="phone" property="phone" />
+        <result column="introduce" property="introduce" />
+        <result column="sex" property="sex" />
+        <result column="apply_state" property="applyState" />
+        <result column="apply_time" property="applyTime" />
+    </resultMap>
+
+</mapper>

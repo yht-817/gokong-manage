@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.ChineseCircleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.ChineseCircle">
+        <id column="id" property="id"/>
+        <result column="circle_no" property="circleNo"/>
+        <result column="instructions" property="instructions"/>
+        <result column="circle_img" property="circleImg"/>
+        <result column="create_time" property="createTime"/>
+        <result column="like_num" property="likeNum"/>
+        <result column="comments_num" property="commentsNum"/>
+        <result column="share_num" property="shareNum"/>
+        <result column="user_no" property="userNo"/>
+    </resultMap>
+    <!--分页查询华人圈，现在数据量少不对华人圈进行数据地理限制-->
+    <select id="findHot" resultType="map">
+        SELECT a.circle_no,a.circle_img,a.like_num,b.user_head,b.nick_name,a.lat,a.lng FROM chinese_circle a,user_info b where a.existe_state = 0 and a.user_no = b.user_no order by create_time desc LIMIT #{pageno},10
+    </select>
+</mapper>

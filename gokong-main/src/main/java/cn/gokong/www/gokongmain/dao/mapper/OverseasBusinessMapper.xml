@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.OverseasBusinessMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.OverseasBusiness">
+        <id column="id" property="id" />
+        <result column="business_no" property="businessNo" />
+        <result column="business_title" property="businessTitle" />
+        <result column="title_img" property="titleImg" />
+        <result column="content" property="content" />
+        <result column="target_content" property="targetContent" />
+        <result column="current_value" property="currentValue" />
+        <result column="target_value" property="targetValue" />
+        <result column="create_time" property="createTime" />
+        <result column="create_account" property="createAccount" />
+    </resultMap>
+    <select id="pageQueryList" resultType="cn.gokong.www.gokongmain.vo.overseas_business.PageQueryListOutput">
+        select business_no,business_title,title_img,target_content,target_value,FORMAT(current_value/target_value,2) as completeTarget
+        from overseas_business
+        where 1 = 1
+        <if test="keyword != null">
+            and business_title like concat(concat('%',#{keyword}),'%')
+        </if>
+        limit #{pageNo},#{pageSize}
+    </select>
+
+</mapper>

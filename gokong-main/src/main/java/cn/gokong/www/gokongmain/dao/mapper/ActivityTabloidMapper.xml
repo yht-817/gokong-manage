@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.ActivityTabloidMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.ActivityTabloid">
+        <id column="id" property="id" />
+        <result column="activity_no" property="activityNo" />
+        <result column="content" property="content" />
+        <result column="activity_time" property="activityTime" />
+        <result column="city_name" property="cityName" />
+    </resultMap>
+
+</mapper>

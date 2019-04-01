@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gokong.www.gokongmain.dao.ChineseCircleEvaluateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.gokong.www.gokongmain.domain.ChineseCircleEvaluate">
+        <id column="id" property="id" />
+        <result column="evaluate_no" property="evaluateNo" />
+        <result column="from_user_no" property="fromUserNo" />
+        <result column="evaluate_content" property="evaluateContent" />
+        <result column="to_user_no" property="toUserNo" />
+        <result column="evaluate_date" property="evaluateDate" />
+        <result column="praise_num" property="praiseNum" />
+        <result column="reply_num" property="replyNum" />
+    </resultMap>
+
+</mapper>
